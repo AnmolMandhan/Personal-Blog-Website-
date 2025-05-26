@@ -1,0 +1,165 @@
+/* ===============================
+   style.css
+   =============================== */
+body{
+   font-family:Arial,Helvetica,sans-serif;
+   margin:0;
+   padding:0;
+   line-height:1.6;
+   background:#fafafa;
+   color:#222222}
+
+
+header,footer{
+   background:#333;
+   color:#fff;
+   text-align:center;
+   padding:1rem}
+
+header nav{
+   display:flex;
+   justify-content:space-between;
+   align-items:center}
+
+header nav a{
+   
+   color:#fff;
+   text-decoration:none;
+   margin:0 .5rem}
+
+#menu-toggle{
+   display:none;
+   background:none;
+   border:none;
+   
+   color:#fff;
+   font-size:1.5rem}
+
+main{
+   display:flex;
+   flex-wrap:wrap;
+   margin:1rem}
+
+#featured{
+   flex:3}
+
+#sidebar{
+      flex:1;
+      padding-left:1rem}
+
+#sidebar h3{
+         margin-top:0}
+
+.post-card{background:#fff;
+   margin-bottom:1rem;
+   border-radius:6px;
+   overflow:hidden;
+   box-shadow:0 2px 4px rgba(0,0,0,.1)}
+
+.post-card img{
+      width:100%;
+      display:block;
+      height:200px;
+      object-fit:cover}
+
+.post-card h2{
+   margin:.5rem 1rem}
+.post-card p{
+   margin:0 1rem 1rem;
+   max-height:70px;
+   overflow:hidden}
+
+.post-card a.read-more{
+      display:inline-block;
+      margin:0 1rem 1rem;
+      color:#007bff}
+
+.post-meta{
+   font-size:.8rem;
+   color:#666;
+   margin:0 1rem 1rem;
+   border-top:1px solid #eee;
+   padding-top:.5rem}
+
+form input,form textarea,form select{
+      width:100%;
+      padding:.5rem;
+      margin-bottom:1rem;
+      border:1px solid #ccc;
+      border-radius:4px;
+      font-size:1rem}
+
+form button{
+         padding:.5rem 1rem;
+         background:#333;
+         color:#fff;
+         border:none;
+         border-radius:4px;
+        
+         cursor:pointer}
+
+#postsContainer .empty{
+            font-style:italic;
+            color:#777;
+            text-align:center}
+
+
+.active-link{
+   font-weight:bold}
+
+#new-post-modal{
+   position:fixed;
+   inset:0;
+   background:rgba(0,0,0,.6);
+   display:none;
+   justify-content:center;
+   align-items:center}
+#new-post-btn{
+padding:25px;
+background-color: rgb(204, 202, 181);
+cursor: pointer;
+border-radius: 50%;
+
+}
+
+#new-post-modal .modal-content{
+      background:#fff;
+      padding:1rem;
+      max-width:500px;
+      border-radius:8px;
+      max-height:90vh;
+      overflow:auto}
+
+#new-post-modal.show{
+   display:flex}
+
+@media(max-width:768px){
+   main{flex-direction:column}
+
+#sidebar{
+   padding-left:0}
+
+#menu-toggle{
+   
+   display:block}
+
+   header nav ul{
+      
+      display:none;
+      flex-direction:column;
+      background:#333;
+      position:absolute;
+      top:60px;right:0;
+      min-width:150px}
+
+header nav ul.show{
+         display:flex}
+
+header nav ul li{
+   margin:0}
+
+
+header nav ul li a{
+   padding:.5rem 1rem;
+   display:block}
+}

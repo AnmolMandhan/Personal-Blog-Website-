@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog Post</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: sans-serif; padding: 1rem; max-width: 700px; margin: auto; }
+    img { max-width: 100%; margin: 1rem 0; }
+    #editForm input, #editForm textarea { width: 100%; padding: 0.5rem; margin: 0.5rem 0; }
+    #editForm { display: none; border-top: 1px solid #ccc; padding-top: 1rem; margin-top: 1rem; }
+    .btns button { margin-right: 10px; padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <button onclick="window.location.href='index.html'" style="margin-bottom: 1rem; padding: 20px; background-color: rgb(170, 170, 192); cursor: pointer;">← Back to Home</button>
+
+  <article>
+    <h1 id="post-title"></h1>
+    <p id="post-meta"></p>
+    <img id="post-img" alt="">
+    <p id="post-content"></p>
+    <div class="btns">
+      <button style="background-color: rgb(111, 191, 120); cursor: pointer;" onclick="showEdit()">Edit</button>
+      <button style="background-color:rgb(233, 123, 123); cursor: pointer;" onclick="deletePost()">Delete</button>
+    </div>
+  </article>
+
+  <!-- Edit Form -->
+  <form id="editForm" onsubmit="updatePost(event)">
+    <input id="edit-title" placeholder="Edit Title" required>
+    <textarea id="edit-content" placeholder="Edit Content" required></textarea>
+    <input id="edit-category" placeholder="Edit Category" required>
+    <button style="background-color:rgb(169, 216, 137); cursor: pointer;" type="submit">Save</button>
+  </form>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get('id');
+    const posts = JSON.parse(localStorage.getItem('posts') || '[]');
+    const post = posts.find(p => p.id === postId);
+
+    if (!post) {
+      document.body.innerHTML = "<h2>Post not found.</h2>";
+    } else {
+      document.getElementById('post-title').textContent = post.title;
+      document.getElementById('post-meta').textContent = `${post.category} • ${post.createdAt}`;
+      document.getElementById('post-img').src = post.image;
+      document.getElementById('post-img').alt = post.title;
+      document.getElementById('post-content').textContent = post.content;
+    }
+
+    function showEdit() {
+      document.getElementById('editForm').style.display = 'block';
+      document.getElementById('edit-title').value = post.title;
+      document.getElementById('edit-content').value = post.content;
+      document.getElementById('edit-category').value = post.category;
+    }
+
+    function updatePost(e) {
+      e.preventDefault();
+      post.title = document.getElementById('edit-title').value;
+      post.content = document.getElementById('edit-content').value;
+      post.category = document.getElementById('edit-category').value;
+      localStorage.setItem('posts', JSON.stringify(posts));
+      alert('Post updated!');
+      location.reload();
+    }
+
+    function deletePost() {
+      if (confirm("Are you sure you want to delete this post?")) {
+        const updatedPosts = posts.filter(p => p.id !== postId);
+        localStorage.setItem('posts', JSON.stringify(updatedPosts));
+        alert('Post deleted!');
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
+</body>
+</html>

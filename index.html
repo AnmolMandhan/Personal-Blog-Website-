@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>My Blog</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>My Blog</h1>
+  <nav>
+    <button id="menu-toggle">☰</button>
+    <ul id="nav-links">
+      <li><a href="index.html" class="active-link">Home</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <button id="new-post-btn">Add Post</button>
+  </nav>
+</header>
+
+<main>
+  <section id="featured"></section>
+
+  <aside id="sidebar">
+    <h3>Categories</h3>
+    <ul id="cat-list"></ul>
+
+    <h3>Recent Posts</h3>
+    <ul id="recent-posts"></ul>
+  </aside>
+</main>
+
+<section id="contact" style="padding:1rem;max-width:600px;margin:auto">
+  <h2>Contact Me</h2>
+  <form action="https://formspree.io/f/your-form-id" method="POST">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="_replyto" placeholder="Your Email" required>
+    <textarea name="message" placeholder="Your Message" required></textarea>
+    <button type="submit">Send</button>
+  </form>
+</section>
+
+<footer><p>© 2025 Anmol Mandhan</p></footer>
+
+<!-- New / Edit Post Modal -->
+<div id="new-post-modal">
+  <div class="modal-content">
+    <h2 id="modal-title">New Post</h2>
+    <form id="postForm">
+      <input id="title" placeholder="Post Title" required>
+      <textarea id="content" placeholder="Post Content" required></textarea>
+      <input id="image" type="file" accept="image/*">
+      <input id="category" placeholder="Category (e.g., Tech)" required>
+      <button type="submit">Publish</button>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ---------- nav toggle ---------- */
+const menuToggle = document.getElementById('menu-toggle');
+const navLinks   = document.getElementById('nav-links');
+menuToggle.addEventListener('click', () => navLinks.classList.toggle('show'));
+
+/* ---------- modal controls ---------- */
+const modal     = document.getElementById('new-post-modal');
+const newBtn    = document.getElementById('new-post-btn');
+const postForm  = document.getElementById('postForm');
+const modalTitle= document.getElementById('modal-title');
+
+newBtn.onclick = () => openModal();          // open empty form
+modal.onclick  = e => { if (e.target === modal) closeModal(); };
+
+function openModal(isEdit = false) {
+  modalTitle.textContent = isEdit ? 'Edit Post' : 'New Post';
+  modal.classList.add('show');
+}
+function closeModal()  { modal.classList.remove('show'); }
+
+/* ---------- localStorage helpers ---------- */
+const getPosts  = () => JSON.parse(localStorage.getItem('posts') || '[]');
+const savePosts = arr => localStorage.setItem('posts', JSON.stringify(arr));
+
+/* ---------- render homepage ---------- */
+function render() {
+  const featured = document.getElementById('featured');
+  const catList  = document.getElementById('cat-list');
+  const recent   = document.getElementById('recent-posts');
+
+  const posts    = getPosts();
+  featured.innerHTML = '';
+  catList.innerHTML  = '';
+  recent.innerHTML   = '';
+
+  if (posts.length === 0) {
+    featured.innerHTML = '<p class="empty">No posts yet.</p>';
+    return;
+  }
+
+  // featured cards
+  posts.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'post-card';
+    card.innerHTML = `
+      <img src="${p.image}" alt="${p.title}">
+      <h2>${p.title}</h2>
+      <p>${p.content}</p>
+      <p class="post-meta">${p.category} • ${p.createdAt}</p>
+      <a class="read-more" href="post.html?id=${p.id}">Read More</a>
+      <button style="background-color: rgb(111, 191, 120); cursor: pointer;"onclick="editPost('${p.id}')">Edit</button>
+      <button style="background-color:rgb(233, 123, 123); cursor: pointer;"onclick="deletePost('${p.id}')">Delete</button>`;
+    featured.appendChild(card);
+  });
+
+  // category list
+  [...new Set(posts.map(p => p.category))].forEach(c => {
+    catList.insertAdjacentHTML('beforeend', `<li>${c}</li>`);
+  });
+
+  // recent list (first 5)
+  posts.slice(0, 5).forEach(p => {
+    recent.insertAdjacentHTML(
+      'beforeend',
+      `<li><a href="post.html?id=${p.id}">${p.title}</a></li>`
+    );
+  });
+}
+render();
+
+/* ---------- create / edit post ---------- */
+let editTargetId = null;              // null = new post
+
+postForm.addEventListener('submit', e => {
+  e.preventDefault();
+
+  const posts = getPosts();
+  const file  = document.getElementById('image').files[0];
+
+  const saveAndRefresh = imgData => {
+    if (editTargetId) {
+      /* ---------- update existing ---------- */
+      const post = posts.find(p => p.id === editTargetId);
+      post.title     = document.getElementById('title').value;
+      post.content   = document.getElementById('content').value;
+      post.category  = document.getElementById('category').value;
+      post.createdAt = new Date().toLocaleString();
+      if (imgData) post.image = imgData;
+    } else {
+      /* ---------- create new ---------- */
+      posts.unshift({
+        id:        Date.now().toString(),
+        title:     document.getElementById('title').value,
+        content:   document.getElementById('content').value,
+        image:     imgData || '',
+        category:  document.getElementById('category').value,
+        createdAt: new Date().toLocaleString()
+      });
+    }
+    savePosts(posts);
+    closeModal();
+    postForm.reset();
+    editTargetId = null;
+    render();
+  };
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => saveAndRefresh(reader.result);
+    reader.readAsDataURL(file);
+  } else {
+    // no new image chosen
+    saveAndRefresh(null);
+  }
+});
+
+/* ---------- Edit & Delete functions ---------- */
+function editPost(id) {
+  const post = getPosts().find(p => p.id === id);
+  if (!post) return;
+
+  // populate form
+  document.getElementById('title').value    = post.title;
+  document.getElementById('content').value  = post.content;
+  document.getElementById('category').value = post.category;
+  document.getElementById('image').value    = '';   // clear file input
+
+  editTargetId = id;
+  openModal(true);
+}
+
+function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  savePosts(getPosts().filter(p => p.id !== id));
+  render();
+}
+</script>
+</body>
+</html>
