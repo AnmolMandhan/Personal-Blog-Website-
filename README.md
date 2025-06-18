@@ -104,3 +104,11 @@ Adjusts neatly for phones, tablets, and desktops
 ## Live Demo Of Project
 https://personalblogsite-iebugig3k-anmols-projects-d8ab2d65.vercel.app/index.html
 
+
+💼 Author
+👤 Anmol Mandhan
+💻 Django | Python | Frontend Developer | AI/ML
+📎 LinkedIn Profile | www.linkedin.com/in/anmol-mandhan-6a80362a8
+🌟 Give a Star!
+If you like this project, don’t forget to ⭐ star it on GitHub!
+
